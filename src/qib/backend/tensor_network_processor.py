@@ -1,11 +1,11 @@
 from typing import Sequence
 import h5py
-from qib.backend import QuantumProvider
+from qib.backend import QuantumProcessor
 from qib.circuit import Circuit
 from qib.field import Field
 
 
-class TensorNetworkProvider(QuantumProvider):
+class TensorNetworkProcessor(QuantumProcessor):
 
     def submit(self, circ: Circuit, fields: Sequence[Field], description):
         """
@@ -17,12 +17,12 @@ class TensorNetworkProvider(QuantumProvider):
         with h5py.File(description["filename"], "w") as f:
             tgrp = f.create_group("tensors")
             for tensor in net.net.tensors.values():
-                dset = tgrp.create_dataset(str(tensor.tid), data=() if tensor.tid == -1 else net.data[tensor.dataref].astype(complex))
+                dset = tgrp.create_dataset(str(tensor.tid), data=(
+                ) if tensor.tid == -1 else net.data[tensor.dataref].astype(complex))
                 dset.attrs["tid"] = tensor.tid
                 dset.attrs["bids"] = tensor.bids
-        job = { "net": net }
+        job = {"net": net}
         return job
-
 
     def query_results(self, job):
         """

@@ -9,7 +9,8 @@ class TestBackend(unittest.TestCase):
         """
         Test tensor network backend functionality.
         """
-        field = qib.field.Field(qib.field.ParticleType.QUBIT, qib.lattice.IntegerLattice((2,)))
+        field = qib.field.Field(
+            qib.field.ParticleType.QUBIT, qib.lattice.IntegerLattice((2,)))
         qa = qib.field.Qubit(field, 0)
         qb = qib.field.Qubit(field, 1)
         # Hadamard gate
@@ -22,9 +23,11 @@ class TestBackend(unittest.TestCase):
         circuit.append_gate(cnot)
         self.assertTrue(circuit.fields() == [field])
         h_cnot = cnot.as_matrix() @ np.kron(hadamard.as_matrix(), np.identity(2))
-        self.assertTrue(np.array_equal(circuit.as_matrix([field]).toarray(), h_cnot))
-        provider = qib.backend.TensorNetworkProvider()
-        provider.submit(circuit, [field], { "filename": "bell_circuit_tensornet.hdf5" })
+        self.assertTrue(np.array_equal(
+            circuit.as_matrix([field]).toarray(), h_cnot))
+        provider = qib.backend.TensorNetworkProcessor()
+        provider.submit(circuit, [field], {
+                        "filename": "bell_circuit_tensornet.hdf5"})
 
 
 if __name__ == "__main__":

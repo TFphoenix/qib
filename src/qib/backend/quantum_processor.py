@@ -4,7 +4,7 @@ from qib.circuit import Circuit
 from qib.field import Field
 
 
-class QuantumProvider(abc.ABC):
+class QuantumProcessor(abc.ABC):
 
     @abc.abstractmethod
     def submit(self, circ: Circuit, fields: Sequence[Field], description):
