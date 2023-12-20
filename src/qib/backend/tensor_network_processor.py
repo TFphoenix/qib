@@ -7,6 +7,10 @@ from qib.field import Field
 
 class TensorNetworkProcessor(QuantumProcessor):
 
+    @property
+    def configuration(self):
+        return None
+
     def submit(self, circ: Circuit, fields: Sequence[Field], description):
         """
         Submit a quantum circuit to a backend provider,
