@@ -5,9 +5,5 @@ class Experiment(abc.ABC):
     pass
 
 
-class ExperimentRequest(Experiment):
-    pass
-
-
-class ExperimentResponse(Experiment):
+class ExperimentResults(abc.ABC):
     pass

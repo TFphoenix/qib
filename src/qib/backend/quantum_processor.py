@@ -2,6 +2,7 @@ import abc
 from typing import Sequence
 from qib.circuit import Circuit
 from qib.field import Field
+from qib.backend import Experiment
 
 
 class QuantumProcessor(abc.ABC):
@@ -12,17 +13,24 @@ class QuantumProcessor(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def submit(self, circ: Circuit, fields: Sequence[Field], description):
+    def submit(self, circ: Circuit, fields: Sequence[Field], description) -> Experiment:
         """
         Submit a quantum circuit to a backend provider,
-        returning a "job" object to query the results.
+        returning an "experiment" object to query the results.
         """
         pass
 
     @abc.abstractmethod
-    def query_results(self, job):
+    def query_results(self, experiment: Experiment):
         """
-        Query results of a previously submitted job.
+        Query results of a previously submitted experiment.
+        """
+        pass
+
+    @abc.abstractmethod
+    def wait_for_results(self, experiment: Experiment):
+        """
+        Wait for results of a previously submitted experiment.
         """
         pass
 
