@@ -48,3 +48,11 @@ class ProcessorConfiguration:
         self.simulator = simulator
         self.conditional = conditional
         self.open_pulse = open_pulse
+
+
+class ProcessorOptions:
+
+    def __init__(
+            self,
+    ) -> None:
+        pass  # TODO
