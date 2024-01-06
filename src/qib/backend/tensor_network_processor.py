@@ -28,7 +28,7 @@ class TensorNetworkProcessor(QuantumProcessor):
         job = {"net": net}
         return job
 
-    def query_results(self, job):
+    def query_results(self, experiment):
         """
         Query results of a previously submitted job.
         """

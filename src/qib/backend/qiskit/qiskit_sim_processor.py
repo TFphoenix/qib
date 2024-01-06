@@ -5,18 +5,18 @@ from qib.circuit import Circuit
 from qib.field import Field
 
 
-class WMIProcessor(QuantumProcessor):
+class QiskitSimProcessor(QuantumProcessor):
 
     def __init__(self):
         self.configuration = ProcessorConfiguration(
-            backend_name="WMIQC",
-            backend_version="1.0.0",
-            n_qubits=6,
-            basis_gates=['id', 'x', 'y', 'sx', 'rz', 'cz'],
-            local=False,
-            simulator=False,
-            conditional=False,
-            open_pulse=True
+            # backend_name="WMIQC",
+            # backend_version="1.0.0",
+            # n_qubits=6,
+            # basis_gates=['id', 'x', 'y', 'sx', 'rz', 'cz'],
+            # local=False,
+            # simulator=False,
+            # conditional=False,
+            # open_pulse=True
         )
 
     @property
