@@ -2,7 +2,7 @@ import abc
 from typing import Sequence
 from qib.circuit import Circuit
 from qib.field import Field
-from qib.backend import Experiment
+from qib.backend import Experiment, ExperimentResults
 
 
 class QuantumProcessor(abc.ABC):
@@ -21,14 +21,14 @@ class QuantumProcessor(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def query_results(self, experiment: Experiment):
+    def query_results(self, experiment: Experiment) -> ExperimentResults:
         """
         Query results of a previously submitted experiment.
         """
         pass
 
     @abc.abstractmethod
-    def wait_for_results(self, experiment: Experiment):
+    async def wait_for_results(self, experiment: Experiment) -> ExperimentResults:
         """
         Wait for results of a previously submitted experiment.
         """
