@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 
 
@@ -13,3 +15,8 @@ class Options(abc.ABC):
         self.shots = shots
         self.memory = memory
         self.do_emulation = do_emulation
+
+    @staticmethod
+    @abc.abstractmethod
+    def default() -> Options:
+        pass

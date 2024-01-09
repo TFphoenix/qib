@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 from typing import Sequence
 from qib.circuit import Circuit
@@ -9,12 +11,7 @@ class QuantumProcessor(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def configuration(self):
-        pass
-
-    @staticmethod
-    @abc.abstractmethod
-    def _default_options() -> Options:
+    def configuration(self) -> ProcessorConfiguration:
         pass
 
     @abc.abstractmethod

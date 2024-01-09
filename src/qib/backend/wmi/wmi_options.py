@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from qib.backend.options import Options
 
 
@@ -44,4 +46,27 @@ class WMIOptions(Options):
         self.meas_level = meas_level
         self.fridge = fridge
 
-    # TODO: Move default_options here
+    @staticmethod
+    def default() -> WMIOptions:
+        return WMIOptions(
+            shots=1024,
+            memory=False,
+            do_emulation=True,
+            loops={},
+            sequence_settings={},
+            reference_measurement={'function': 'nothing'},
+            trigger_time=0.001,
+            relax=True,
+            relax_time=None,
+            default_qubits=None,
+            weighting_amp=1.0,
+            acquisition_mode='integration_trigger',
+            averaging_mode='single_shot',
+            log_level='debug',
+            log_level_std='info',
+            log_file_level='debug',
+            store_nt_result=True,
+            name_suffix='',
+            meas_level=2,
+            fridge='badwwmi-021-xld105'
+        )

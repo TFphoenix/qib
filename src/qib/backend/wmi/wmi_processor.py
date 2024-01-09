@@ -23,14 +23,6 @@ class WMIProcessor(QuantumProcessor):
     def configuration(self):
         return self.configuration
 
-    @staticmethod
-    def _default_options() -> WMIOptions:
-        return WMIOptions(
-            shots=1024,
-            memory=False,
-            do_emulation=True
-        )
-
     def submit(self, circ: Circuit, fields: Sequence[Field], description):
         pass
 
