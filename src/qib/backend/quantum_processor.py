@@ -2,7 +2,7 @@ import abc
 from typing import Sequence
 from qib.circuit import Circuit
 from qib.field import Field
-from qib.backend import Experiment, ExperimentResults
+from qib.backend import Experiment, ExperimentResults, Options
 
 
 class QuantumProcessor(abc.ABC):
@@ -10,6 +10,11 @@ class QuantumProcessor(abc.ABC):
     @property
     @abc.abstractmethod
     def configuration(self):
+        pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def _default_options() -> Options:
         pass
 
     @abc.abstractmethod
@@ -56,11 +61,3 @@ class ProcessorConfiguration:
         self.simulator = simulator
         self.conditional = conditional
         self.open_pulse = open_pulse
-
-
-class ProcessorOptions:
-
-    def __init__(
-            self,
-    ) -> None:
-        pass  # TODO

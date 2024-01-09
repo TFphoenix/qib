@@ -1,6 +1,6 @@
 from typing import Sequence
-from qib.backend import QuantumProcessor
-from qib.backend import ProcessorConfiguration
+from qib.backend import QuantumProcessor, ProcessorConfiguration
+from qib.backend.wmi import WMIOptions
 from qib.circuit import Circuit
 from qib.field import Field
 
@@ -23,10 +23,15 @@ class WMIProcessor(QuantumProcessor):
     def configuration(self):
         return self.configuration
 
+    @staticmethod
+    def _default_options() -> WMIOptions:
+        return WMIOptions(
+            shots=1024,
+            memory=False,
+            do_emulation=True
+        )
+
     def submit(self, circ: Circuit, fields: Sequence[Field], description):
-        # TODO: transpile circuit into QObj
-        # TODO: send QObj to WMI Backend
-        # TODO: Register & return quantum process with WMI Backend
         pass
 
     def query_results(self, experiment):
