@@ -15,24 +15,10 @@ class QuantumProcessor(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def submit(self, circ: Circuit, fields: Sequence[Field], description) -> Experiment:
+    def submit_experiment(self, circ: Circuit, fields: Sequence[Field], options: Options) -> Experiment:
         """
-        Submit a quantum circuit to a backend provider,
+        Submit a quantum circuit, fields, and options to a backend provider,
         returning an "experiment" object to query the results.
-        """
-        pass
-
-    @abc.abstractmethod
-    def query_results(self, experiment: Experiment) -> ExperimentResults:
-        """
-        Query results of a previously submitted experiment.
-        """
-        pass
-
-    @abc.abstractmethod
-    async def wait_for_results(self, experiment: Experiment) -> ExperimentResults:
-        """
-        Wait for results of a previously submitted experiment.
         """
         pass
 

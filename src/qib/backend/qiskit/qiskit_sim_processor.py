@@ -1,6 +1,6 @@
 from typing import Sequence
-from qib.backend import QuantumProcessor
-from qib.backend import ProcessorConfiguration, ProcessorOptions
+from qib.backend import QuantumProcessor, ProcessorConfiguration
+from qib.backend.qiskit import QiskitSimExperiment, QiskitSimOptions
 from qib.circuit import Circuit
 from qib.field import Field
 
@@ -19,27 +19,13 @@ class QiskitSimProcessor(QuantumProcessor):
             open_pulse=False
         )
 
-        self._default_options = QiskitSimOptions(
-            shots=1024,
-            memory=False,
-            do_emulation=True
-        )
-
     @property
     def configuration(self):
         return self.configuration
 
-    def submit(self, circ: Circuit, fields: Sequence[Field], description):
+    def submit_experiment(self, circ: Circuit, fields: Sequence[Field], options: QiskitSimOptions) -> QiskitSimExperiment:
         # TODO: transpile circuit into QObj
-        # TODO: send QObj to WMI Backend
-        # TODO: Register & return quantum process with WMI Backend
+        # TODO: generate experiment object
+        # TODO: submit experiment via HTTP request
+        # TODO: return experiment object
         pass
-
-    def query_results(self, experiment):
-        pass
-
-
-class QiskitSimOptions(ProcessorOptions):
-
-    def __init__(self, shots, memory, do_emulation):
-        super().__init__(shots, memory, do_emulation)

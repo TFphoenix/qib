@@ -22,9 +22,3 @@ class WMIProcessor(QuantumProcessor):
     @property
     def configuration(self):
         return self.configuration
-
-    def submit(self, circ: Circuit, fields: Sequence[Field], description):
-        pass
-
-    def query_results(self, experiment):
-        pass
