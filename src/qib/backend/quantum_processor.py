@@ -22,6 +22,10 @@ class QuantumProcessor(abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def _transpile(self, circ: Circuit, fields: Sequence[Field]):
+        pass
+
 
 class ProcessorConfiguration:
 
@@ -38,13 +42,13 @@ class ProcessorConfiguration:
             open_pulse: bool,
             max_shots: int
     ) -> None:
-        self.backend_name = backend_name
-        self.backend_version = backend_version
-        self.n_qubits = n_qubits
-        self.basis_gates = basis_gates
-        self.coupling_map = coupling_map
-        self.local = local
-        self.simulator = simulator
-        self.conditional = conditional
-        self.open_pulse = open_pulse
-        self.max_shots = max_shots
+        self.backend_name: str = backend_name
+        self.backend_version: str = backend_version
+        self.n_qubits: int = n_qubits
+        self.basis_gates: Sequence[str] = basis_gates
+        self.coupling_map: Sequence[Sequence[int]] = coupling_map
+        self.local: bool = local
+        self.simulator: bool = simulator
+        self.conditional: bool = conditional
+        self.open_pulse: bool = open_pulse
+        self.max_shots: int = max_shots

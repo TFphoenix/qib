@@ -10,7 +10,7 @@ class Options(abc.ABC):
             self,
             shots: int,
     ) -> None:
-        self.shots = shots
+        self.shots: int = shots
 
     @staticmethod
     @abc.abstractmethod
