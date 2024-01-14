@@ -31,16 +31,20 @@ class ProcessorConfiguration:
             backend_version: str,
             n_qubits: int,
             basis_gates: Sequence[str],
+            coupling_map: Sequence[Sequence[int]],
             local: bool,
             simulator: bool,
             conditional: bool,
-            open_pulse: bool
+            open_pulse: bool,
+            max_shots: int
     ) -> None:
         self.backend_name = backend_name
         self.backend_version = backend_version
         self.n_qubits = n_qubits
         self.basis_gates = basis_gates
+        self.coupling_map = coupling_map
         self.local = local
         self.simulator = simulator
         self.conditional = conditional
         self.open_pulse = open_pulse
+        self.max_shots = max_shots

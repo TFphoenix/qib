@@ -13,6 +13,7 @@ class QiskitSimProcessor(QuantumProcessor):
             backend_version="1.0.0",
             n_qubits=3,
             basis_gates=['x', 'sx', 'rz', 'cz'],
+            coupling_map=None,
             local=False,
             simulator=True,
             conditional=False,
@@ -23,7 +24,9 @@ class QiskitSimProcessor(QuantumProcessor):
     def configuration(self):
         return self.configuration
 
-    def submit_experiment(self, circ: Circuit, fields: Sequence[Field], options: QiskitSimOptions) -> QiskitSimExperiment:
+    def submit_experiment(self, circ: Circuit, fields: Sequence[Field], options: QiskitSimOptions = None) -> QiskitSimExperiment:
+        if options is None:
+            options = QiskitSimOptions.default()
         # TODO: transpile circuit into QObj
         # TODO: generate experiment object
         # TODO: submit experiment via HTTP request
