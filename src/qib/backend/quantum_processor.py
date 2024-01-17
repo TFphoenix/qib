@@ -23,7 +23,15 @@ class QuantumProcessor(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def _transpile(self, circ: Circuit, fields: Sequence[Field]):
+    def _validate_circuit(self, circ: Circuit, fields: Sequence[Field]):
+        pass
+
+    @abc.abstractmethod
+    def _serialize_experiment(self, circ: Circuit, fields: Sequence[Field]):
+        pass
+
+    @abc.abstractmethod
+    def _send_experiment(self, experiment: Experiment):
         pass
 
 

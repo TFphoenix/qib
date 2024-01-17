@@ -12,7 +12,7 @@ class WMIProcessor(QuantumProcessor):
             backend_name="WMIQC",
             backend_version="1.0.0",
             n_qubits=6,
-            basis_gates=['id', 'x', 'y', 'sx', 'rz', 'cz'],
+            basis_gates=['id', 'x', 'y', 'sx', 'rz'],
             local=False,
             simulator=False,
             conditional=False,

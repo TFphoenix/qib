@@ -50,7 +50,6 @@ class WMIOptions(Options):
     def default() -> WMIOptions:
         return WMIOptions(
             shots=1024,
-            memory=False,
             do_emulation=True,
             loops={},
             sequence_settings={},

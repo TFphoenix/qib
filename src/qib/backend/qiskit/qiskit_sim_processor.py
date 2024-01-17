@@ -6,9 +6,10 @@ from qib.field import Field
 
 
 class QiskitSimProcessor(QuantumProcessor):
+    _applicant_id_count = 1000
 
-    def __init__(self, url: str, access_token: str):
-        self.url: str = url
+    def __init__(self, access_token: str):
+        self.url: str = "https://wmiqc-api.wmi.badw.de/1/qiskitSimulator"
         self.access_token: str = access_token
 
         self.configuration = ProcessorConfiguration(
@@ -30,13 +31,11 @@ class QiskitSimProcessor(QuantumProcessor):
     def submit_experiment(self, circ: Circuit, fields: Sequence[Field], options: QiskitSimOptions = None) -> QiskitSimExperiment:
         if options is None:
             options = QiskitSimOptions.default()
-        # TODO: transpile circuit into QObj
+        # TODO: validate circuit
+        # TODO: serialize circuit to Qobj
         # TODO: generate experiment object
         # TODO: submit experiment via HTTP request
         # TODO: return experiment object
-        pass
-
-    def _transpile(self, circ: Circuit, fields: Sequence[Field]):
         pass
 
     def _http_put_experiment(self, experiment):

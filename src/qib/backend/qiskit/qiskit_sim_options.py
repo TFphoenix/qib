@@ -13,6 +13,5 @@ class QiskitSimOptions(Options):
     @staticmethod
     def default() -> QiskitSimOptions:
         return QiskitSimOptions(
-            shots=1024,
-            memory=False
+            shots=1024
         )
