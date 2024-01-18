@@ -112,4 +112,5 @@ class Circuit:
         """
         instructions = []
         for gate in self.gates:
-            instructions.append()
+            instructions.append(gate.as_qobj_openQASM())
+        return instructions
