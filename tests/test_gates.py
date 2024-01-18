@@ -32,6 +32,9 @@ class TestGates(unittest.TestCase):
             self.assertTrue(np.array_equal(gate.as_circuit_matrix([field]).toarray(),
                                             np.kron(np.kron(np.identity(8), gate.as_matrix()), np.identity(2))))
             self.assertTrue(np.array_equal(gate.as_tensornet().contract_einsum()[0], gate.as_matrix()))
+            self.assertTrue(gate.as_qobj_openQASM()['name'] in ['x', 'y', 'z', 'h'])
+            self.assertTrue(gate.as_qobj_openQASM()['params'] == [])
+            self.assertTrue(gate.as_qobj_openQASM()['qubits'] == [3])
             g_copy = copy(gate)
             self.assertTrue(g_copy == gate)
             self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
@@ -68,6 +71,9 @@ class TestGates(unittest.TestCase):
             self.assertTrue(np.allclose(gate.as_matrix() @ gate.as_matrix(),
                                         gates2ang[i].as_matrix()))
             self.assertTrue(np.array_equal(gate.as_tensornet().contract_einsum()[0], gate.as_matrix()))
+            self.assertTrue(gate.as_qobj_openQASM()['name'] in ['rx', 'ry', 'rz', 'r'])
+            self.assertTrue(gate.as_qobj_openQASM()['params'] == [θ] if i < 3 else list(nθ))
+            self.assertTrue(gate.as_qobj_openQASM()['qubits'] == [3])
             if i < 3:
                 vθ = np.zeros(3)
                 vθ[i] = θ
@@ -106,6 +112,9 @@ class TestGates(unittest.TestCase):
             self.assertTrue(np.array_equal(gate.as_circuit_matrix([field]).toarray(),
                                             np.kron(np.kron(np.identity(8), gate.as_matrix()), np.identity(2))))
             self.assertTrue(np.array_equal(gate.as_tensornet().contract_einsum()[0], gate.as_matrix()))
+            self.assertTrue(gate.as_qobj_openQASM()['name'] in ['s', 't', 'sdg', 'tdg'])
+            self.assertTrue(gate.as_qobj_openQASM()['params'] == [])
+            self.assertTrue(gate.as_qobj_openQASM()['qubits'] == [3])
             g_copy = copy(gate)
             self.assertTrue(g_copy == gate)
             self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
