@@ -35,10 +35,10 @@ class TestGates(unittest.TestCase):
                                            np.kron(np.kron(np.identity(8), gate.as_matrix()), np.identity(2))))
             self.assertTrue(np.array_equal(
                 gate.as_tensornet().contract_einsum()[0], gate.as_matrix()))
-            self.assertIn(gate.as_qobj_openQASM()[
+            self.assertIn(gate.as_openQASM()[
                           'name'], ['x', 'y', 'z', 'h'])
-            self.assertEqual(gate.as_qobj_openQASM()['params'], [])
-            self.assertEqual(gate.as_qobj_openQASM()['qubits'], [3])
+            self.assertEqual(gate.as_openQASM()['params'], [])
+            self.assertEqual(gate.as_openQASM()['qubits'], [3])
             g_copy = copy(gate)
             self.assertTrue(g_copy == gate)
             self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
@@ -76,11 +76,11 @@ class TestGates(unittest.TestCase):
                                         gates2ang[i].as_matrix()))
             self.assertTrue(np.array_equal(
                 gate.as_tensornet().contract_einsum()[0], gate.as_matrix()))
-            self.assertIn(gate.as_qobj_openQASM()[
+            self.assertIn(gate.as_openQASM()[
                 'name'], ['rx', 'ry', 'rz', 'r'])
-            self.assertEqual(gate.as_qobj_openQASM()['params'], [
+            self.assertEqual(gate.as_openQASM()['params'], [
                 θ] if i < 3 else list(nθ))
-            self.assertEqual(gate.as_qobj_openQASM()['qubits'], [3])
+            self.assertEqual(gate.as_openQASM()['qubits'], [3])
             if i < 3:
                 vθ = np.zeros(3)
                 vθ[i] = θ
@@ -120,10 +120,10 @@ class TestGates(unittest.TestCase):
                                            np.kron(np.kron(np.identity(8), gate.as_matrix()), np.identity(2))))
             self.assertTrue(np.array_equal(
                 gate.as_tensornet().contract_einsum()[0], gate.as_matrix()))
-            self.assertIn(gate.as_qobj_openQASM()[
+            self.assertIn(gate.as_openQASM()[
                 'name'], ['s', 't', 'sdg', 'tdg'])
-            self.assertEqual(gate.as_qobj_openQASM()['params'], [])
-            self.assertEqual(gate.as_qobj_openQASM()['qubits'], [3])
+            self.assertEqual(gate.as_openQASM()['params'], [])
+            self.assertEqual(gate.as_openQASM()['qubits'], [3])
             g_copy = copy(gate)
             self.assertTrue(g_copy == gate)
             self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
@@ -158,7 +158,7 @@ class TestGates(unittest.TestCase):
         self.assertTrue(np.allclose(np.reshape(
             gate.as_tensornet().contract_einsum()[0], (8, 8)), gmat))
         with self.assertRaises(NotImplementedError):
-            gate.as_qobj_openQASM()
+            gate.as_openQASM()
         g_copy = copy(gate)
         self.assertTrue(g_copy == gate)
         self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
@@ -195,7 +195,7 @@ class TestGates(unittest.TestCase):
             self.assertTrue(np.allclose(np.reshape(gate.as_tensornet().contract_einsum()[0], (8, 8)),
                                         np.outer(x, e1) if not tp else np.outer(e1, x)))
             with self.assertRaises(NotImplementedError):
-                gate.as_qobj_openQASM()
+                gate.as_openQASM()
             g_copy = copy(gate)
             self.assertTrue(g_copy == gate)
             self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
@@ -234,7 +234,7 @@ class TestGates(unittest.TestCase):
                                            qib.util.permute_gate_wires(np.kron(cnot.as_matrix(), np.identity(8)), [2, 1, 0, 3, 4])))
             cnot_tensor, axes_map = cnot.as_tensornet().contract_einsum()
             with self.assertRaises(NotImplementedError):
-                cnot.as_qobj_openQASM()
+                cnot.as_openQASM()
             # control axes are identical; form full matrix for comparison
             cnot_tensor = qib.tensor_network.tensor_network.to_full_tensor(
                 cnot_tensor, axes_map)
@@ -259,7 +259,7 @@ class TestGates(unittest.TestCase):
                                        qib.util.permute_gate_wires(np.kron(toffoli.as_matrix(), np.identity(4)), [3, 0, 2, 4, 1])))
         toffoli_tensor, axes_map = toffoli.as_tensornet().contract_einsum()
         with self.assertRaises(NotImplementedError):
-            toffoli.as_qobj_openQASM()
+            toffoli.as_openQASM()
         # some control axes are identical; form full matrix for comparison
         toffoli_tensor = qib.tensor_network.tensor_network.to_full_tensor(
             toffoli_tensor, axes_map)
@@ -276,7 +276,7 @@ class TestGates(unittest.TestCase):
             self.assertEqual(ctoffoli.num_controls, 1)
             ctoffoli_tensor, axes_map = ctoffoli.as_tensornet().contract_einsum()
             with self.assertRaises(NotImplementedError):
-                ctoffoli.as_qobj_openQASM()
+                ctoffoli.as_openQASM()
             # some control axes are identical; form full matrix for comparison
             ctoffoli_tensor = qib.tensor_network.tensor_network.to_full_tensor(
                 ctoffoli_tensor, axes_map)
@@ -314,7 +314,7 @@ class TestGates(unittest.TestCase):
                                        cexph_inverse.as_circuit_matrix([field2, field3]).toarray()))
         cexph_tensor, axes_map = cexph.as_tensornet().contract_einsum()
         with self.assertRaises(NotImplementedError):
-            cexph.as_qobj_openQASM()
+            cexph.as_openQASM()
         # some control axes are identical; form full matrix for comparison
         cexph_tensor = qib.tensor_network.tensor_network.to_full_tensor(
             cexph_tensor, axes_map)
@@ -360,7 +360,7 @@ class TestGates(unittest.TestCase):
                                        qib.util.permute_gate_wires(np.kron(mplxg.as_matrix(), np.identity(16)), [3, 2, 4, 0, 5, 6, 1])))
         mplxg_tensor, axes_map = mplxg.as_tensornet().contract_einsum()
         with self.assertRaises(NotImplementedError):
-            mplxg.as_qobj_openQASM()
+            mplxg.as_openQASM()
         # some control axes are identical; form full matrix for comparison
         mplxg_tensor = qib.tensor_network.tensor_network.to_full_tensor(
             mplxg_tensor, axes_map)
@@ -402,7 +402,7 @@ class TestGates(unittest.TestCase):
                         @ mplxg.as_matrix(), np.identity(2**6)))
         mplxg_tensor, axes_map = mplxg.as_tensornet().contract_einsum()
         with self.assertRaises(NotImplementedError):
-            mplxg.as_qobj_openQASM()
+            mplxg.as_openQASM()
         # some control axes are identical; form full matrix for comparison
         mplxg_tensor = qib.tensor_network.tensor_network.to_full_tensor(
             mplxg_tensor, axes_map)
@@ -462,7 +462,7 @@ class TestGates(unittest.TestCase):
         self.assertTrue(np.allclose(np.reshape(
             gate.as_tensornet().contract_einsum()[0], (4, 4)), gate.as_matrix()))
         with self.assertRaises(NotImplementedError):
-            gate.as_qobj_openQASM()
+            gate.as_openQASM()
         g_copy = copy(gate)
         self.assertTrue(g_copy == gate)
         self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
@@ -515,7 +515,7 @@ class TestGates(unittest.TestCase):
             self.assertTrue(np.allclose(gate.as_circuit_matrix(
                 [field2, field1]).toarray(), np.kron(np.identity(2**3), gate.as_matrix())))
             with self.assertRaises(NotImplementedError):
-                gate.as_qobj_openQASM()
+                gate.as_openQASM()
             g_copy = copy(gate)
             self.assertTrue(g_copy == gate)
             self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
@@ -541,7 +541,7 @@ class TestGates(unittest.TestCase):
         self.assertTrue(np.array_equal(np.reshape(
             gate.as_tensornet().contract_einsum()[0], (8, 8)), gate.as_matrix()))
         with self.assertRaises(NotImplementedError):
-            gate.as_qobj_openQASM()
+            gate.as_openQASM()
         g_copy = copy(gate)
         self.assertTrue(g_copy == gate)
         self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))

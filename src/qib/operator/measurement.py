@@ -75,7 +75,7 @@ class Measurement(AbstractOperator):
         """
         raise NotImplementedError()  # TODO: Decide if this is needed
 
-    def as_qobj_openQASM(self):
+    def as_openQASM(self):
         """
         Generate a Qobj OpenQASM representation of the operator.
         """

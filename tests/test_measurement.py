@@ -21,9 +21,9 @@ class TestMeasurement(unittest.TestCase):
         self.assertEqual(MEASUREMENT.memory(), [2, 1, 3])
         with self.assertRaises(NotImplementedError):
             MEASUREMENT.as_matrix()
-        self.assertEqual(MEASUREMENT.as_qobj_openQASM()['name'], 'measure')
-        self.assertEqual(MEASUREMENT.as_qobj_openQASM()['qubits'], [1, 2, 3])
-        self.assertEqual(MEASUREMENT.as_qobj_openQASM()['memory'], [2, 1, 3])
+        self.assertEqual(MEASUREMENT.as_openQASM()['name'], 'measure')
+        self.assertEqual(MEASUREMENT.as_openQASM()['qubits'], [1, 2, 3])
+        self.assertEqual(MEASUREMENT.as_openQASM()['memory'], [2, 1, 3])
 
     def test_measurement_qubits_only(self):
         MEASUREMENT = qib.Measurement()
@@ -42,9 +42,9 @@ class TestMeasurement(unittest.TestCase):
         self.assertEqual(MEASUREMENT.memory(), [1, 2])
         with self.assertRaises(NotImplementedError):
             MEASUREMENT.as_matrix()
-        self.assertEqual(MEASUREMENT.as_qobj_openQASM()['name'], 'measure')
-        self.assertEqual(MEASUREMENT.as_qobj_openQASM()['qubits'], [1, 2])
-        self.assertEqual(MEASUREMENT.as_qobj_openQASM()['memory'], [1, 2])
+        self.assertEqual(MEASUREMENT.as_openQASM()['name'], 'measure')
+        self.assertEqual(MEASUREMENT.as_openQASM()['qubits'], [1, 2])
+        self.assertEqual(MEASUREMENT.as_openQASM()['memory'], [1, 2])
 
     def test_measurement_length_mismatch(self):
         MEASUREMENT = qib.Measurement()
