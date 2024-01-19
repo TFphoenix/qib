@@ -37,7 +37,8 @@ from qib.operator import (
     MultiplexedGate,
     TimeEvolutionGate,
     BlockEncodingGate,
-    GeneralGate
+    GeneralGate,
+    Measurement
 )
 
 from qib.circuit import Circuit
