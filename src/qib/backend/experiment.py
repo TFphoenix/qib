@@ -55,12 +55,6 @@ class Experiment(abc.ABC):
         # TODO: Ensure that experiment was submitted (status != INITIALIZING)
 
     @abc.abstractmethod
-    async def wait_for_results(self) -> ExperimentResults:
-        """
-        Wait for results of a previously submitted experiment.
-        """
-
-    @abc.abstractmethod
     async def cancel(self) -> ExperimentResults:
         """
         Cancel a previously submitted experiment.
