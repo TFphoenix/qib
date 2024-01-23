@@ -1,10 +1,11 @@
 from copy import copy
 from typing import Sequence
 import numpy as np
-from qib.operator import Gate
+from qib.operator import Gate, Measurement
 from qib.field import Field
 from qib.tensor_network import SymbolicTensor, SymbolicTensorNetwork, TensorNetwork
 from qib.util import map_particle_to_wire
+from typing import Union
 
 
 class Circuit:
@@ -20,9 +21,9 @@ class Circuit:
         else:
             self.gates = list(gates)
 
-    def append_gate(self, gate: Gate):
+    def append_gate(self, gate: Union[Gate, Measurement]):
         """
-        Append a quantum gate.
+        Append a quantum gate or a measurement operator.
         """
         self.gates.append(copy(gate))
 
@@ -33,9 +34,9 @@ class Circuit:
         for g in other.gates:
             self.gates += copy(g)
 
-    def prepend_gate(self, gate: Gate):
+    def prepend_gate(self, gate: Union[Gate, Measurement]):
         """
-        Prepend a quantum gate.
+        Prepend a quantum gate or a measurement operator.
         """
         self.gates.insert(0, copy(gate))
 

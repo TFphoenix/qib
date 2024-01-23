@@ -4,6 +4,12 @@ import abc
 
 
 class Options(abc.ABC):
+    """
+    Parent class for a quantum experiment options.
+
+    The options of a quantum experiment performed on a given
+    quantum processor.
+    """
 
     @abc.abstractmethod
     def __init__(
@@ -15,4 +21,6 @@ class Options(abc.ABC):
     @staticmethod
     @abc.abstractmethod
     def default() -> Options:
-        pass
+        """
+        The default options of a given processor.
+        """
