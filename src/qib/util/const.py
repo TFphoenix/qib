@@ -28,9 +28,10 @@ GATE_Z: str = 'z'
 # Backend quantum processor's parameters and constants
 BACK_QSIM_NAME = 'QiskitSimulator'
 BACK_QSIM_VERSION = '1.0.0'
+BACK_QSIM_URL = 'https://wmiqc-api.wmi.badw.de/1/qiskitSimulator'
 BACK_WMIQC_NAME = 'WMIQC'
 BACK_WMIQC_VERSION = '1.0.0'
 
 # Qobj parameters and constants
-QOBJ_ID_QISM_EXPERIMENT = "WMI_QiskitSim_Experiment"
-QOBJ_SCHEMA_VERSION = "1.0"
+QOBJ_ID_QISM_EXPERIMENT = 'WMI_QiskitSim_Experiment'
+QOBJ_SCHEMA_VERSION = '1.0'

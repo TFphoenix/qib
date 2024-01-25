@@ -13,7 +13,7 @@ class QiskitSimProcessor(QuantumProcessor):
     """
 
     def __init__(self, access_token: str):
-        self.url: str = "https://wmiqc-api.wmi.badw.de/1/qiskitSimulator"
+        self.url: str = const.BACK_QSIM_URL
         self.access_token: str = access_token
 
     @staticmethod
@@ -36,9 +36,9 @@ class QiskitSimProcessor(QuantumProcessor):
             open_pulse=False
         )
 
-    def submit_experiment(self, circ: Circuit, options: QiskitSimOptions = QiskitSimOptions.default()) -> QiskitSimExperiment:
+    def submit_experiment(self, name: str, circ: Circuit, options: QiskitSimOptions = QiskitSimOptions.default()) -> QiskitSimExperiment:
         self._validate_experiment(circ, options)
-        experiment = QiskitSimExperiment(circ, options)
+        experiment = QiskitSimExperiment(name, circ, options)
         self._send_experiment(experiment)
         return experiment
 

@@ -67,7 +67,7 @@ class Circuit:
             wires_set.update(gate.particles())
         return wires_set
             
-    def bits(self):
+    def clbits(self):
         """
         Set of all classical bits appearing in the circuit.
         """

@@ -31,10 +31,12 @@ class Experiment(abc.ABC):
     @abc.abstractmethod
     def __init__(
             self,
+            name: str,
             circuit: Circuit,
             options: Options,
             type: ExperimentType,
     ) -> None:
+        self.name: str = name
         self.circuit = circuit
         self.options: Options = options
         self.type: ExperimentType = type

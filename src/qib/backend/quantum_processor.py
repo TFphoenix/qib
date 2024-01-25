@@ -24,7 +24,7 @@ class QuantumProcessor(abc.ABC):
         """
 
     @abc.abstractmethod
-    def submit_experiment(self, circ: Circuit, options: Options) -> Experiment:
+    def submit_experiment(self, name: str, circ: Circuit, options: Options) -> Experiment:
         """
         Submit a quantum circuit and experiment execution options to a quantum processor backend,
         returning a validated "experiment" object to query the results.
