@@ -15,8 +15,10 @@ class Options(abc.ABC):
     def __init__(
             self,
             shots: int,
+            init_qubits: bool,
     ) -> None:
         self.shots: int = shots
+        self.init_qubits: bool = init_qubits
 
     @staticmethod
     @abc.abstractmethod

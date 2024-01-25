@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 from enum import Enum
+
 from qib.circuit import Circuit
 from qib.backend import Options
 
@@ -32,30 +33,27 @@ class Experiment(abc.ABC):
             self,
             circuit: Circuit,
             options: Options,
-            type: ExperimentType = ExperimentType.QASM
+            type: ExperimentType,
     ) -> None:
-        self.id: int = 0
-        self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
-        self.instructions: list = circuit.as_openQASM()
+        self.circuit = circuit
         self.options: Options = options
         self.type: ExperimentType = type
+        self._initialize()
 
     @abc.abstractmethod
     def query_status(self) -> ExperimentResults:
         """
         Query the current status of a previously submitted experiment.
         """
-        # TODO: Ensure that experiment was submitted (status != INITIALIZING)
 
     @abc.abstractmethod
     async def wait_for_results(self) -> ExperimentResults:
         """
         Wait for results of a previously submitted experiment.
         """
-        # TODO: Ensure that experiment was submitted (status != INITIALIZING)
 
     @abc.abstractmethod
-    async def cancel(self) -> ExperimentResults:
+    def cancel(self) -> ExperimentResults:
         """
         Cancel a previously submitted experiment.
         """
@@ -65,6 +63,14 @@ class Experiment(abc.ABC):
         """
         Get the Qobj OpenQASM representation of the experiment.
         """
+        
+    def _initialize(self):
+        """
+        Initialize the experiment.
+        """
+        self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
+        self.instructions: list = self.circuit.as_openQASM()
+        self.id: int = 0
 
 
 class ExperimentResults(abc.ABC):

@@ -10,7 +10,8 @@ from typing import Union
 
 class Circuit:
     """
-    A quantum circuit consists of a list of quantum gates.
+    A quantum circuit consists of a list of quantum gates
+    and control operators (e.g. Measurement).
 
     We follow the convention that the first gate in the list is applied first.
     """
@@ -56,6 +57,25 @@ class Circuit:
                 if f not in flist:
                     flist.append(f)
         return flist
+    
+    def particles(self):
+        """
+        Set of all quantum particles appearing in the circuit.
+        """
+        wires_set = set()
+        for gate in self.gates:
+            wires_set.update(gate.particles())
+        return wires_set
+            
+    def bits(self):
+        """
+        Set of all classical bits appearing in the circuit.
+        """
+        bits_set = set()
+        for gate in self.gates:
+            if type(gate) is Measurement:
+                bits_set.update(gate.memory())
+        return bits_set
 
     def inverse(self):
         """

@@ -1,12 +1,16 @@
 from itertools import combinations
 
+from qib.util import const
+from qib.circuit import Circuit
+from qib.field import Particle
 from qib.backend import QuantumProcessor, ProcessorConfiguration, GateProperties
 from qib.backend.qiskit import QiskitSimExperiment, QiskitSimOptions
-from qib.circuit import Circuit
 
 
 class QiskitSimProcessor(QuantumProcessor):
-    _applicant_id_count = 1000
+    """
+    The WMI Qiskit Simulator quantum processor implementation.
+    """
 
     def __init__(self, access_token: str):
         self.url: str = "https://wmiqc-api.wmi.badw.de/1/qiskitSimulator"
@@ -15,15 +19,15 @@ class QiskitSimProcessor(QuantumProcessor):
     @staticmethod
     def configuration() -> ProcessorConfiguration:
         return ProcessorConfiguration(
-            backend_name="QiskitSimulator",
-            backend_version="1.0.0",
+            backend_name=const.BACK_QSIM_NAME,
+            backend_version=const.BACK_QSIM_VERSION,
             n_qubits=3,
-            basis_gates=['x', 'sx', 'rz', 'cz'],
+            basis_gates=[const.GATE_X, const.GATE_SX, const.GATE_RZ, const.GATE_CZ],
             gates=[
-                GateProperties('x', [[0]]),
-                GateProperties('sx', [[0]]),
-                GateProperties('rz', [[0]], ['theta']),
-                GateProperties('cz', [[1,0], [2,0]])
+                GateProperties(const.GATE_X, [[0]]),
+                GateProperties(const.GATE_SX, [[0]]),
+                GateProperties(const.GATE_RZ, [[0]], ['theta']),
+                GateProperties(const.GATE_CZ, [[1,0], [2,0]])
             ],
             coupling_map=None,
             local=False,
@@ -32,10 +36,7 @@ class QiskitSimProcessor(QuantumProcessor):
             open_pulse=False
         )
 
-    def submit_experiment(self, circ: Circuit, options: QiskitSimOptions = None) -> QiskitSimExperiment:
-        if options is None:
-            options = QiskitSimOptions.default()
-
+    def submit_experiment(self, circ: Circuit, options: QiskitSimOptions = QiskitSimOptions.default()) -> QiskitSimExperiment:
         self._validate_experiment(circ, options)
         experiment = QiskitSimExperiment(circ, options)
         self._send_experiment(experiment)
@@ -46,15 +47,11 @@ class QiskitSimProcessor(QuantumProcessor):
         if options.shots > self.configuration().max_shots:
             raise ValueError("Number of shots exceeds maximum allowed number of shots.")
 
-        qubits_set = set()
-        # clbits_set = set() # TODO: See if it's necessary
         for gate in circ.gates:
             gate_openQASM = gate.as_openQASM()
             gate_name = gate_openQASM['name']
             gate_qubits = gate_openQASM['qubits']
             gate_params = gate_openQASM['params'] if 'params' in gate_openQASM else []
-            qubits_set.update(gate_qubits)
-            # clbits_set.update(gate_openQASM['memory'] if gate_name == 'measure' else []) # TODO: See if it's necessary
             
             if gate_name != 'measure':
                 # check that the gate is supported by the processor
@@ -71,16 +68,18 @@ class QiskitSimProcessor(QuantumProcessor):
                     raise ValueError(f"Gate {type(gate)} is not configured for the used parameters.")
 
             # check that gates are performed only on coupled qubits
-            if len(gate_qubits) > 1:
+            if len(gate_qubits) > 1 and self.configuration().coupling_map:
                 qubit_pairs = list(combinations(gate_qubits, 2))
                 for qubit_pair in qubit_pairs:
                     if qubit_pair not in self.configuration().coupling_map:
                         raise ValueError(f"Gate {type(gate)} is not performed on coupled qubits.")
             
         # check that the number of qubits is adequate
-        if len(qubits_set) > self.configuration().n_qubits \
-        and min(qubits_set) >= 0 \
-        and max(qubits_set) < self.configuration().n_qubits:
+        qubits: set[Particle] = gate.particles()
+        qubits_index = [q.index for q in qubits]
+        if len(qubits) > self.configuration().n_qubits \
+        or min(qubits_index) < 0 \
+        or max(qubits_index) >= self.configuration().n_qubits:
             raise ValueError("Number of qubits exceeds maximum allowed number of qubits, or indexes are incorrect.")
 
     def _send_experiment(self, experiment: QiskitSimExperiment):
