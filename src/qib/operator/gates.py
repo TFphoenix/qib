@@ -2554,8 +2554,8 @@ class ISwapGate(Gate):
         """
         Return the list of fields hosting the quantum particles which the gate acts on.
         """
-        if self.qubit:
-            return [self.qubit.field]
+        if self.q1 and self.q2:
+            return [self.q1.field, self.q2.field]
         return []
     
     def inverse(self):
