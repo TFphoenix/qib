@@ -13,14 +13,14 @@ class QiskitSimProcessor(QuantumProcessor):
     """
 
     def __init__(self, access_token: str):
-        self.url: str = const.BACK_QSIM_URL
+        self.url: str = const.BACK_WMIQSIM_URL
         self.access_token: str = access_token
 
     @staticmethod
     def configuration() -> ProcessorConfiguration:
         return ProcessorConfiguration(
-            backend_name=const.BACK_QSIM_NAME,
-            backend_version=const.BACK_QSIM_VERSION,
+            backend_name=const.BACK_WMIQSIM_NAME,
+            backend_version=const.BACK_WMIQSIM_VERSION,
             n_qubits=3,
             basis_gates=[const.GATE_X, const.GATE_SX, const.GATE_RZ, const.GATE_CZ],
             gates=[

@@ -55,8 +55,8 @@ class QiskitSimExperiment(Experiment):
                     }
                 ],
             'header': {
-                'backend_name': const.BACK_QSIM_NAME,
-                'backend_version': const.BACK_QSIM_VERSION
+                'backend_name': const.BACK_WMIQSIM_NAME,
+                'backend_version': const.BACK_WMIQSIM_VERSION
                 },
             'config': {
                 'shots': self.options.shots,
