@@ -17,6 +17,8 @@ class TestGates(unittest.TestCase):
         Y = qib.PauliYGate()
         Z = qib.PauliZGate()
         H = qib.HadamardGate()
+        # TEST: Identity Gate
+        # TEST: SX Gate
         self.assertTrue(np.array_equal(
             X.as_matrix() @ Y.as_matrix(), 1j*Z.as_matrix()))
         self.assertTrue(np.allclose(H.as_matrix() @ X.as_matrix()
@@ -371,6 +373,12 @@ class TestGates(unittest.TestCase):
             g_copy = copy(gate)
             self.assertTrue(g_copy == gate)
             self.assertTrue(np.allclose(g_copy.as_matrix(), gate.as_matrix()))
+
+    def test_two_qubit_iswap_gate(self):
+        """
+        Test implementation of the iSWAP gate.
+        """
+        pass # TODO
 
     def test_multiplexed_gate(self):
         """
