@@ -8,7 +8,8 @@ from qib.operator.molecular_hamiltonian import MolecularHamiltonianSymmetry, Mol
 from qib.operator.control_instructions import (
     ControlInstruction,
     MeasureInstruction,
-    BarrierInstruction
+    BarrierInstruction,
+    DelayInstruction
 )
 from qib.operator.gates import (
     Gate,

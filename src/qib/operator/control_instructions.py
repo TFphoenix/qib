@@ -29,13 +29,13 @@ class ControlInstruction(AbstractOperator):
     @abc.abstractmethod
     def num_wires(self):
         """
-        The number of "wires" (or quantum particles) this instruction is performed on.
+        The number of "wires" (or quantum particles) this instruction is applied on.
         """
         
     @abc.abstractmethod
     def particles(self):
         """
-        Return the list of quantum particles the instruction is performed on.
+        Return the list of quantum particles the instruction is applied on.
         """
     
     @abc.abstractmethod
@@ -47,7 +47,7 @@ class ControlInstruction(AbstractOperator):
     @abc.abstractmethod
     def on(self, qubits: Sequence[Qubit]):
         """
-        Perform the instruction on the specified qubits.
+        Apply the instruction on the specified qubits.
         """
     
     def as_matrix(self):
@@ -93,7 +93,7 @@ class MeasureInstruction(ControlInstruction):
     @property
     def num_wires(self):
         """
-        The number of "wires" (or quantum particles) this instruction is performed on.
+        The number of "wires" (or quantum particles) this instruction is applied on.
         """
         if self.qubits:
             return len(self.qubits)
@@ -101,7 +101,7 @@ class MeasureInstruction(ControlInstruction):
 
     def particles(self):
         """
-        Return the list of quantum particles the instruction is performed on.
+        Return the list of quantum particles the instruction is applied on.
         """
         if self.qubits:
             return [q for q in self.qubits]
@@ -109,7 +109,7 @@ class MeasureInstruction(ControlInstruction):
 
     def fields(self):
         """
-        Return the list of fields hosting the quantum particles which the instruction is performed on.
+        Return the list of fields hosting the quantum particles which the instruction is applied on.
         """
         if self.qubits:
             return [q.field for q in self.qubits]
@@ -125,7 +125,7 @@ class MeasureInstruction(ControlInstruction):
 
     def on(self, qubits: Sequence[Qubit], clbits: Sequence[int] = None):
         """
-        Perform the instruction on the specified qubits.
+        Apply the instruction on the specified qubits.
         """
         self._assign_qubits_clbits(qubits, clbits)
 
@@ -181,16 +181,14 @@ class BarrierInstruction(ControlInstruction):
     any further instructions until all qubits have reached the barrier.
     """
     
-    def __init__(self, qubits: Sequence[Qubit] = None):
-        """
-        Create a barrier instruction.
-        """
+    def __init__(self, qubits: Sequence[Qubit] = []):
         self.qubits = qubits
     
     @property
     def num_wires(self):
         """
-        The number of "wires" (or quantum particles) this instruction is performed on.
+        The number of "wires" (or quantum particles) this instruction is applied on.
+        If 0, the barrier is applied on all "wires" of the circuit.
         """
         if self.qubits:
             return len(self.qubits)
@@ -198,7 +196,8 @@ class BarrierInstruction(ControlInstruction):
     
     def particles(self):
         """
-        Return the list of quantum particles the instruction is performed on.
+        Return the list of quantum particles the instruction is applied on.
+        If empty, the barrier is applied on all particles of the circuit.
         """
         if self.qubits:
             return [q for q in self.qubits]
@@ -207,16 +206,21 @@ class BarrierInstruction(ControlInstruction):
     def fields(self):
         """
         List of all fields appearing in the instruction.
+        If empty, all fields of the circuit appears in the instruction.
         """
         if self.qubits:
             return [q.field for q in self.qubits]
         return []
     
-    def on(self, qubits: Sequence[Qubit]):
+    def on(self, qubits: Sequence[Qubit] = []):
         """
-        Perform the instruction on the specified qubits.
+        Apply the instruction on the specified qubits.
+        If left empty, the instruction is applied on all qubits of the circuit.
         """
         self.qubits = qubits
+        
+        # enable chaining
+        return self
     
     def as_openQASM(self):
         """
@@ -238,5 +242,91 @@ class BarrierInstruction(ControlInstruction):
         Check if instructions are equivalent.
         """
         if type(other) == type(self) and self.qubits == other.qubits:
+            return True
+        return False
+    
+    
+class DelayInstruction(ControlInstruction):
+    """
+    A delay instruction for a quantum circuit.
+    
+    The delay instruction specifies a waiting period for qubits,
+    pausing execution for a defined duration to control the timing of quantum operations.
+    """
+    
+    def __init__(self, duration: float, qubits: Sequence[Qubit] = []):
+        self._duration = duration
+        self.qubits = qubits
+    
+    @property
+    def num_wires(self):
+        """
+        The number of "wires" (or quantum particles) this instruction is applied on.
+        """
+        if self.qubits:
+            return len(self.qubits)
+        return 0
+    
+    @property
+    def duration(self):
+        """
+        Get the duration of the delay instruction,
+        in dt (differential element of time).
+        """
+        return self._duration
+    
+    @duration.setter
+    def duration(self, value: float):
+        """
+        Set the duration of the delay instruction,
+        in dt (differential element of time).
+        """
+        self._duration = value
+    
+    def particles(self):
+        """
+        Return the list of quantum particles the instruction is applied on.
+        """
+        if self.qubits:
+            return [q for q in self.qubits]
+        return []
+    
+    def fields(self):
+        """
+        List of all fields appearing in the instruction.
+        """
+        if self.qubits:
+            return [q.field for q in self.qubits]
+        return []
+    
+    def on(self, qubits: Sequence[Qubit] = None):
+        """
+        Apply the instruction on the specified qubits.
+        """
+        self.qubits = qubits
+        
+        # enable chaining
+        return self
+    
+    def as_openQASM(self):
+        """
+        Generate a Qobj OpenQASM representation of the instruction.
+        """
+        return {
+            'name': const.INSTR_DELAY,
+            'qubits': [q.index for q in self.qubits],
+            'duration': self.duration # in dt (differential element of time)
+        }
+    
+    def __copy__(self):
+        """
+        Create a copy of the instruction.
+        """
+        return DelayInstruction(self.qubits)
+    
+    def __eq__(self, other: object) -> bool:
+        if (type(other) == type(self) and
+            self.qubits == other.qubits and
+            other.duration == self.duration):
             return True
         return False
