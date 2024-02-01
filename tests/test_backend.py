@@ -43,8 +43,8 @@ class TestBackend(unittest.TestCase):
         hadamard = qib.HadamardGate(qa)
         cnot = qib.ControlledGate(qib.PauliXGate(qb), 1).set_control(qa)
 
-        # Operations
-        measurement = qib.Measurement([qa, qb])
+        # Instructions
+        measurement = qib.MeasureInstruction([qa, qb])
 
         # Circuit
         circuit = qib.Circuit()

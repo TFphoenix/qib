@@ -2,9 +2,9 @@ import unittest
 import qib
 
 
-class TestMeasurement(unittest.TestCase):
+class TestControlInstructions(unittest.TestCase):
     def test_measurement(self):
-        MEASUREMENT = qib.Measurement()
+        MEASUREMENT = qib.MeasureInstruction()
         # create some qubits the operator can act on
         field = qib.field.Field(
             qib.field.ParticleType.QUBIT, qib.lattice.IntegerLattice((3,), pbc=False))
@@ -26,7 +26,7 @@ class TestMeasurement(unittest.TestCase):
         self.assertEqual(MEASUREMENT.as_openQASM()['memory'], [2, 1, 3])
 
     def test_measurement_qubits_only(self):
-        MEASUREMENT = qib.Measurement()
+        MEASUREMENT = qib.MeasureInstruction()
         # create some qubits the operator can act on
         field = qib.field.Field(
             qib.field.ParticleType.QUBIT, qib.lattice.IntegerLattice((3,), pbc=False))
@@ -47,7 +47,7 @@ class TestMeasurement(unittest.TestCase):
         self.assertEqual(MEASUREMENT.as_openQASM()['memory'], [1, 2])
 
     def test_measurement_length_mismatch(self):
-        MEASUREMENT = qib.Measurement()
+        MEASUREMENT = qib.MeasureInstruction()
         # create some qubits the operator can act on
         field = qib.field.Field(
             qib.field.ParticleType.QUBIT, qib.lattice.IntegerLattice((3,), pbc=False))
