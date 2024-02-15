@@ -17,8 +17,8 @@ class ExperimentStatus(str, Enum):
 
 
 class ExperimentType(str, Enum):
-    QASM = 'OpenQASM'
-    PULSE = 'OpenPulse'
+    QASM = 'QASM'
+    PULSE = 'PULSE'
 
 
 class Experiment(abc.ABC):
@@ -67,13 +67,13 @@ class Experiment(abc.ABC):
         """
         Get the Qobj OpenQASM representation of the experiment.
         """
-        
+
     @abc.abstractmethod
     def _validate(self):
         """
         Validate the experiment in the context of its quantum processor.
         """
-        
+
     def _initialize(self):
         """
         Initialize the experiment.

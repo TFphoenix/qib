@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 from itertools import combinations
+import uuid
 
 from qib.util import const
 from qib.field import Particle
@@ -22,7 +23,7 @@ class WMIQSimExperiment(Experiment):
                  configuration: ProcessorConfiguration,
                  type: ExperimentType = ExperimentType.QASM):
         super().__init__(name, circuit, options, configuration, type)
-        self.qobj_id = const.QOBJ_ID_QISM_EXPERIMENT
+        self.qobj_id = uuid.uuid4()
         self.schema_version = const.QOBJ_SCHEMA_VERSION
         self._validate()
         
@@ -41,7 +42,7 @@ class WMIQSimExperiment(Experiment):
         qubits: set[Particle] = self.circuit.particles()
         clbits: set[int] = self.circuit.clbits()
         return {
-            'qobj_id': self.qobj_id,
+            'qobj_id': str(self.qobj_id),
             'type': self.type.value,
             'schema_version': self.schema_version,
             'experiments': [
@@ -49,10 +50,10 @@ class WMIQSimExperiment(Experiment):
                         'header': {
                             'qubit_labels': {'qubits': [['q', qubit.index] for qubit in qubits]},
                             'n_qubits': len(qubits),
-                            'qreg_sizes': len(qubits),
+                            'qreg_sizes': {'q': len(qubits)},
                             'clbit_labels': {'clbits': [['c', clbit] for clbit in clbits]},
                             'memory_slots': len(clbits),
-                            'creg_sizes': len(clbits),
+                            'creg_sizes': {'q': len(clbits)},
                             'name': self.name,
                             'global_phase': 0.0,
                             'metadata': {}
@@ -75,7 +76,25 @@ class WMIQSimExperiment(Experiment):
                 'init_qubits': self.options.init_qubits,
                 'do_emulation': False,
                 'memory_slots': len(clbits),
-                'n_qubits': len(qubits)
+                'n_qubits': len(qubits),
+                
+                # TEST
+                # 'acquisition_mode': 'integration_trigger',
+                # 'averaging_mode': 'single_shot',
+                # 'chip': 'dedicatedSimulator',
+                # 'log_file_level': 'debug',
+                # 'log_level_std': 'info',
+                # 'log_level': 'debug',
+                # 'loops': {},
+                # 'name_suffix': '',
+                # 'parameter_binds': [],
+                # 'parametric_pulses': [],
+                # 'reference_measurement': {'function': 'nothing'},
+                # 'relax': True,
+                # 'sequence_settings': {},
+                # 'store_nt_result': True,
+                # 'trigger_time': 0.001,
+                # 'weighting_amp': 1.0,
             },
         }
         

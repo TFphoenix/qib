@@ -4,7 +4,6 @@ import qib
 
 
 class TestBackend(unittest.TestCase):
-
     def test_tensor_network(self):
         """
         Test tensor network processor functionality.
@@ -59,8 +58,7 @@ class TestBackend(unittest.TestCase):
         experiment = processor.submit_experiment(circuit, options)
 
         # Experiment Results
-        # results = await experiment.wait_for_results()
-        # TEST: mock results and test serialization
+        
 
 
 if __name__ == "__main__":
