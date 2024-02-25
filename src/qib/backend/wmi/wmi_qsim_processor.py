@@ -1,7 +1,7 @@
 from qib.util import const, networking
 from qib.circuit import Circuit
-from qib.backend import QuantumProcessor, ProcessorConfiguration, GateProperties
-from qib.backend.wmi import WMIQSimOptions, WMIQSimExperiment
+from qib.backend import QuantumProcessor, ProcessorConfiguration, GateProperties, ExperimentStatus
+from qib.backend.wmi import WMIOptions, WMIExperiment, WMIExperimentResults
 
 
 class WMIQSimProcessor(QuantumProcessor):
@@ -37,14 +37,20 @@ class WMIQSimProcessor(QuantumProcessor):
             simulator=True,
         )
 
-    def submit_experiment(self, name: str, circ: Circuit, options: WMIQSimOptions = WMIQSimOptions.default()) -> WMIQSimExperiment:
-        experiment = WMIQSimExperiment(name, circ, options, self.configuration())
-        self._send_experiment(experiment)
+    def submit_experiment(self, name: str, circ: Circuit, options: WMIOptions = WMIOptions.default()) -> WMIExperiment:
+        experiment = WMIExperiment(name, circ, options, self.configuration(), self.access_token)
+        response = self._send_experiment(experiment)
+        self._process_response(experiment, response.json())
         return experiment
 
-    def _send_experiment(self, experiment: WMIQSimExperiment):
+    def _send_experiment(self, experiment: WMIExperiment):
         http_headers = {'access-token': self.access_token, 'Content-Type': 'application/json'}
-        networking.http_put(url = f'{self.url}/qobj', 
+        return networking.http_put(url = f'{self.url}/qobj', 
                             headers = http_headers,
                             body = {'qobj': experiment.as_openQASM()},
                             title = const.NW_MSG_SEND)
+    
+    def _process_response(self, experiment: WMIExperiment, response: dict):
+        experiment.from_json(response)
+        if experiment.status == ExperimentStatus.ERROR:
+            raise RuntimeError(f'Experiment could not be submitted: {experiment.error}')

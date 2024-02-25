@@ -36,7 +36,7 @@ class Experiment(abc.ABC):
             options: Options,
             configuration: ProcessorConfiguration,
             type: ExperimentType,
-    ) -> None:
+    ):
         self.name: str = name
         self.circuit = circuit
         self.options: Options = options
@@ -45,15 +45,24 @@ class Experiment(abc.ABC):
         self._initialize()
 
     @abc.abstractmethod
-    def query_status(self) -> ExperimentResults:
+    def query_status(self) -> ExperimentStatus:
         """
         Query the current status of a previously submitted experiment.
+        
+        If the experiment was already executed successfully when calling this method,
+        the results will be automatically populated
+        """
+        
+    @abc.abstractmethod
+    def results(self) -> ExperimentResults:
+        """
+        Get the results of a a previously submitted experiment (BLOCKING).
         """
 
     @abc.abstractmethod
     async def wait_for_results(self) -> ExperimentResults:
         """
-        Wait for results of a previously submitted experiment.
+        Wait for the results of a previously submitted experiment (NON-BLOCKING).
         """
 
     @abc.abstractmethod
@@ -67,6 +76,12 @@ class Experiment(abc.ABC):
         """
         Get the Qobj OpenQASM representation of the experiment.
         """
+        
+    @abc.abstractmethod
+    def from_json(self, json: dict) -> Experiment:
+        """
+        Update an experiment object from a JSON dictionary.
+        """
 
     @abc.abstractmethod
     def _validate(self):
@@ -78,9 +93,11 @@ class Experiment(abc.ABC):
         """
         Initialize the experiment.
         """
-        self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
-        self.instructions: list = self.circuit.as_openQASM()
+        self.error: str = None
         self.id: int = 0
+        self.instructions: list = self.circuit.as_openQASM()
+        self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
+        self._results: ExperimentResults = None
 
 
 class ExperimentResults(abc.ABC):
@@ -90,3 +107,9 @@ class ExperimentResults(abc.ABC):
     The results of a quantum experiment performed on a given
     quantum processor.
     """
+    
+    @abc.abstractmethod
+    def from_json(self, json: dict) -> ExperimentResults:
+        """
+        Initialize an experiment results object from a JSON dictionary.
+        """

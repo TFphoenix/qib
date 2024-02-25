@@ -53,7 +53,7 @@ class TestBackend(unittest.TestCase):
 
         # Processor & Experiment
         processor = qib.backend.wmi.WMIQSimProcessor()
-        options = qib.backend.wmi.WMIQSimOptions(
+        options = qib.backend.wmi.WMIOptions(
             shots=1024, memory=False, do_emulation=True)
         experiment = processor.submit_experiment(circuit, options)
 

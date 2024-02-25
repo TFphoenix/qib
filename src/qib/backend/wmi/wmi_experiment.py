@@ -7,35 +7,53 @@ import uuid
 from qib.util import const
 from qib.field import Particle
 from qib.circuit import Circuit
-from qib.backend import Experiment, ExperimentResults, ExperimentType, ProcessorConfiguration
-from qib.backend.wmi import WMIQSimOptions
+from qib.backend import ExperimentStatus, Experiment, ExperimentResults, ExperimentType, ProcessorConfiguration
+from qib.backend.wmi import WMIOptions
 
 
-class WMIQSimExperiment(Experiment):
+class WMIExperiment(Experiment):
     """
-    The WMI Qiskit Simulator quantum experiment implementation.
+    The WMI quantum experiment implementation.
     """
     
     def __init__(self,
                  name: str, 
                  circuit: Circuit,
-                 options: WMIQSimOptions,
+                 options: WMIOptions,
                  configuration: ProcessorConfiguration,
+                 processor_token: str,
                  type: ExperimentType = ExperimentType.QASM):
         super().__init__(name, circuit, options, configuration, type)
+        self.processor_token: str = processor_token
         self.qobj_id = uuid.uuid4()
         self.schema_version = const.QOBJ_SCHEMA_VERSION
-        self._validate()
         
-    def query_status(self) -> WMIQSimExperimentResults:
-        # TODO: Ensure that experiment was submitted (status != INITIALIZING)
+        self._mode: str = None
+        self._job_id: str = None
+        self._execution_datetime: str = None
+        self._validate()
+    
+    def query_status(self) -> ExperimentStatus:
+        if self.status == ExperimentStatus.INITIALIZING:
+            raise ValueError("Experiment has to be submitted first.")
+        elif (self.status == ExperimentStatus.DONE or
+              self.status == ExperimentStatus.ERROR or
+              self.status == ExperimentStatus.CANCELLED):
+            raise ValueError("Experiment has already been executed.")
+        
+        # TODO
+
+    def results(self) -> WMIExperimentResults:
+        if self._results is not None: return self._results
+        # TODO
+        # self.query_status() with FRQ, 'till experiment finished, error, or cancelled
+
+    async def wait_for_results(self) -> WMIExperimentResults:
+        if self._results is not None: return self._results
+        # TODO
         pass
     
-    async def wait_for_results(self) -> WMIQSimExperimentResults:
-        # TODO: Ensure that experiment was submitted (status != INITIALIZING)
-        pass
-    
-    def cancel(self) -> WMIQSimExperimentResults:
+    def cancel(self) -> WMIExperimentResults:
         pass
     
     def as_openQASM(self) -> dict:
@@ -78,7 +96,7 @@ class WMIQSimExperiment(Experiment):
                 'memory_slots': len(clbits),
                 'n_qubits': len(qubits),
                 
-                # TEST
+                # TEST: Missing properties
                 # 'acquisition_mode': 'integration_trigger',
                 # 'averaging_mode': 'single_shot',
                 # 'chip': 'dedicatedSimulator',
@@ -97,6 +115,12 @@ class WMIQSimExperiment(Experiment):
                 # 'weighting_amp': 1.0,
             },
         }
+        
+    def from_json(self, json: dict) -> WMIExperiment:
+        self._job_id = json['job_id']
+        self._execution_datetime = json['execution_datetime']
+        self._mode = json['mode']
+        self._from_wmi_status(json['status'])
         
     def _validate(self):
         # check that the number of shots is not exceeded
@@ -138,6 +162,32 @@ class WMIQSimExperiment(Experiment):
         or max(qubits_index) >= self.configuration.n_qubits:
             raise ValueError("Number of qubits exceeds maximum allowed number of qubits, or indexes are incorrect.")
 
+    def _from_wmi_status(self, status: str):
+        """
+        Set the status of the experiment (convert from WMI-specific format).
+        """
+        if status == 'pending':
+            self.status = ExperimentStatus.QUEUED
+        elif status == 'active':
+            self.status = ExperimentStatus.RUNNING
+        elif status == 'finished':
+            self.status = ExperimentStatus.DONE
+        elif status == 'cancelled':
+            self.status = ExperimentStatus.CANCELLED
+        elif status == 'offline':
+            self.status = ExperimentStatus.ERROR
+            self.error = 'The backend is offline.'
+        else:
+            self.status = ExperimentStatus.ERROR
+            self.error = 'Unknown error.'
 
-class WMIQSimExperimentResults(ExperimentResults):
-    pass
+
+class WMIExperimentResults(ExperimentResults):
+    """
+    The WMI quantum experiment results implementation.
+    """
+        
+    def from_json(self, json: dict) -> WMIExperimentResults:
+        self._runtime: float = json['runtime']
+        self._counts: dict = json['counts'][0]
+        return self

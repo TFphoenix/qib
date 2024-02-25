@@ -25,7 +25,7 @@ class ProcessorConfiguration:
             n_qubits: int,
             open_pulse: bool,
             simulator: bool,
-    ) -> None:
+    ):
         self.backend_name: str = backend_name
         self.backend_version: str = backend_version
         self.basis_gates: Sequence[str] = basis_gates
@@ -62,7 +62,7 @@ class GateProperties:
             name: str,
             qubits: Sequence[Sequence[int]],
             parameters: Sequence[str] = []
-    ) -> None:
+    ):
         self.name: str = name
         self.qubits: Sequence[int] = qubits
         self.parameters: Sequence[str] = parameters
