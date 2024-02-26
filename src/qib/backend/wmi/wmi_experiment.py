@@ -4,10 +4,10 @@ from typing import Any
 from itertools import combinations
 import uuid
 
-from qib.util import const
+from qib.util import const, networking
 from qib.field import Particle
 from qib.circuit import Circuit
-from qib.backend import ExperimentStatus, Experiment, ExperimentResults, ExperimentType, ProcessorConfiguration
+from qib.backend import ExperimentStatus, Experiment, ExperimentResults, ExperimentType, ProcessorConfiguration, ProcessorCredentials
 from qib.backend.wmi import WMIOptions
 
 
@@ -21,19 +21,19 @@ class WMIExperiment(Experiment):
                  circuit: Circuit,
                  options: WMIOptions,
                  configuration: ProcessorConfiguration,
-                 processor_token: str,
+                 processor_credentials: ProcessorCredentials,
                  type: ExperimentType = ExperimentType.QASM):
-        super().__init__(name, circuit, options, configuration, type)
-        self.processor_token: str = processor_token
+        super().__init__(name, circuit, options, configuration, processor_credentials, type)
         self.qobj_id = uuid.uuid4()
         self.schema_version = const.QOBJ_SCHEMA_VERSION
         
-        self._mode: str = None
+        self._mode: str = None # TODO: ignore it
         self._job_id: str = None
         self._execution_datetime: str = None
         self._validate()
     
     def query_status(self) -> ExperimentStatus:
+        # check current status
         if self.status == ExperimentStatus.INITIALIZING:
             raise ValueError("Experiment has to be submitted first.")
         elif (self.status == ExperimentStatus.DONE or
@@ -41,19 +41,31 @@ class WMIExperiment(Experiment):
               self.status == ExperimentStatus.CANCELLED):
             raise ValueError("Experiment has already been executed.")
         
-        # TODO
+        # query incoming status
+        http_headers = {'access-token': self.access_token, 'Content-Type': 'application/json'}
+        result = networking.http_post(url = f'{const.BACK_WMIQSIM_URL}/qobj',
+                                      headers = http_headers,
+                                      body = {'job_id': self._job_id},
+                                      title = const.NW_MSG_QUERY)
+        self.from_json(result.json())
+        
+        # update results
+        if self.status == ExperimentStatus.DONE:
+            self._results = WMIExperimentResults().from_json(result.json())
+
+        return self.status
 
     def results(self) -> WMIExperimentResults:
         if self._results is not None: return self._results
-        # TODO
-        # self.query_status() with FRQ, 'till experiment finished, error, or cancelled
+        # TODO: self.query_status() with FRQ, 'till experiment finished, error, or cancelled
 
     async def wait_for_results(self) -> WMIExperimentResults:
         if self._results is not None: return self._results
-        # TODO
+        # TODO: non-blocking wait for results
         pass
     
     def cancel(self) -> WMIExperimentResults:
+        # TODO: cancel running experiment
         pass
     
     def as_openQASM(self) -> dict:
@@ -191,3 +203,6 @@ class WMIExperimentResults(ExperimentResults):
         self._runtime: float = json['runtime']
         self._counts: dict = json['counts'][0]
         return self
+    
+    def plot_histogram():
+        pass # TODO: matplotlib histogram plotting of counts

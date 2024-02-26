@@ -78,3 +78,17 @@ class GateProperties:
         Check if the gate is configured for the given parameters.
         """
         return len(params) == len(self.parameters)
+
+
+class ProcessorCredentials:
+    """
+    Generic class for quantum processor credentials.
+    
+    Includes parameters on how to access a quantum processor backend.
+    """
+
+    def __init__(self,
+                 url: str,
+                 access_token: str):
+        self.url: str = url
+        self.access_token: str = access_token

@@ -1,6 +1,6 @@
 from qib.util import const, networking
 from qib.circuit import Circuit
-from qib.backend import QuantumProcessor, ProcessorConfiguration, GateProperties, ExperimentStatus
+from qib.backend import QuantumProcessor, ProcessorConfiguration, ProcessorCredentials, GateProperties, ExperimentStatus
 from qib.backend.wmi import WMIOptions, WMIExperiment, WMIExperimentResults
 
 
@@ -10,8 +10,9 @@ class WMIQSimProcessor(QuantumProcessor):
     """
 
     def __init__(self, access_token: str):
-        self.url: str = const.BACK_WMIQSIM_URL
-        self.access_token: str = access_token
+        self.credentials: ProcessorCredentials = ProcessorCredentials(
+            const.BACK_WMIQSIM_URL,
+            access_token)
 
     @staticmethod
     def configuration() -> ProcessorConfiguration:
@@ -38,7 +39,7 @@ class WMIQSimProcessor(QuantumProcessor):
         )
 
     def submit_experiment(self, name: str, circ: Circuit, options: WMIOptions = WMIOptions.default()) -> WMIExperiment:
-        experiment = WMIExperiment(name, circ, options, self.configuration(), self.access_token)
+        experiment = WMIExperiment(name, circ, options, self.configuration(), self.credentials)
         response = self._send_experiment(experiment)
         self._process_response(experiment, response.json())
         return experiment

@@ -4,7 +4,7 @@ import abc
 from enum import Enum
 
 from qib.circuit import Circuit
-from qib.backend import Options, ProcessorConfiguration
+from qib.backend import Options, ProcessorConfiguration, ProcessorCredentials
 
 
 class ExperimentStatus(str, Enum):
@@ -35,6 +35,7 @@ class Experiment(abc.ABC):
             circuit: Circuit,
             options: Options,
             configuration: ProcessorConfiguration,
+            credentials: ProcessorCredentials,
             type: ExperimentType,
     ):
         self.name: str = name
@@ -42,6 +43,7 @@ class Experiment(abc.ABC):
         self.options: Options = options
         self.type: ExperimentType = type
         self.configuration: ProcessorConfiguration = configuration
+        self.credentials = credentials
         self._initialize()
 
     @abc.abstractmethod
