@@ -1,7 +1,7 @@
 from qib.util import const, networking
 from qib.circuit import Circuit
 from qib.backend import QuantumProcessor, ProcessorConfiguration, ProcessorCredentials, GateProperties, ExperimentStatus
-from qib.backend.wmi import WMIOptions, WMIExperiment, WMIExperimentResults
+from qib.backend.wmi import WMIOptions, WMIExperiment
 
 
 class WMIQSimProcessor(QuantumProcessor):
@@ -11,8 +11,8 @@ class WMIQSimProcessor(QuantumProcessor):
 
     def __init__(self, access_token: str):
         self.credentials: ProcessorCredentials = ProcessorCredentials(
-            const.BACK_WMIQSIM_URL,
-            access_token)
+            url = const.BACK_WMIQSIM_URL,
+            access_token = access_token)
 
     @staticmethod
     def configuration() -> ProcessorConfiguration:
@@ -32,7 +32,7 @@ class WMIQSimProcessor(QuantumProcessor):
                 const.GATE_CZ
             ],
             conditional=False,
-            coupling_map=None,
+            coupling_map=[[0, 1]],
             gates=[
                 GateProperties(const.GATE_ID, [[0]]),
                 GateProperties(const.GATE_X, [[0]]),
@@ -61,8 +61,8 @@ class WMIQSimProcessor(QuantumProcessor):
         return experiment
 
     def _send_request(self, experiment: WMIExperiment):
-        http_headers = {'access-token': self.access_token, 'Content-Type': 'application/json'}
-        return networking.http_put(url = f'{self.url}/qobj', 
+        http_headers = {'access-token': self.credentials.access_token, 'Content-Type': 'application/json'}
+        return networking.http_put(url = f'{self.credentials.url}/qobj', 
                             headers = http_headers,
                             body = {'qobj': experiment.as_openQASM()},
                             title = const.NW_MSG_SEND)

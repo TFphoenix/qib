@@ -22,14 +22,10 @@ class WMIExperiment(Experiment):
                  circuit: Circuit,
                  options: WMIOptions,
                  configuration: ProcessorConfiguration,
-                 processor_credentials: ProcessorCredentials,
+                 credentials: ProcessorCredentials,
                  type: ExperimentType = ExperimentType.QASM):
-        super().__init__(name, circuit, options, configuration, processor_credentials, type)
-        self.qobj_id = uuid.uuid4()
-        self.schema_version = const.QOBJ_SCHEMA_VERSION
-        
-        self._job_id: str = None
-        self._execution_datetime: str = None
+        super().__init__(name, circuit, options, configuration, credentials, type)
+        self._initialize()
         self._validate()
     
     def query_status(self) -> ExperimentStatus:
@@ -40,8 +36,8 @@ class WMIExperiment(Experiment):
             return self.status
         
         # query incoming status
-        http_headers = {'access-token': self.access_token, 'Content-Type': 'application/json'}
-        result = networking.http_post(url = f'{const.BACK_WMIQSIM_URL}/qobj',
+        http_headers = {'access-token': self.credentials.access_token, 'Content-Type': 'application/json'}
+        result = networking.http_post(url = f'{self.credentials.url}/qobj',
                                       headers = http_headers,
                                       body = {'job_id': self._job_id},
                                       title = const.NW_MSG_QUERY)
@@ -111,6 +107,7 @@ class WMIExperiment(Experiment):
                 'backend_version': self.configuration.backend_version,
                 },
             'config': {
+                # Required properties
                 'shots': self.options.shots,
                 'memory': self.configuration.memory,
                 'meas_level': self.configuration.meas_level,
@@ -119,7 +116,7 @@ class WMIExperiment(Experiment):
                 'memory_slots': len(clbits),
                 'n_qubits': len(qubits),
                 
-                # TEST: Missing properties
+                # Optional properties
                 # 'acquisition_mode': 'integration_trigger',
                 # 'averaging_mode': 'single_shot',
                 # 'chip': 'dedicatedSimulator',
@@ -144,6 +141,20 @@ class WMIExperiment(Experiment):
         self._execution_datetime = json['execution_datetime']
         self._mode = json['mode']
         self._from_wmi_status(json['status'])
+        return self
+        
+    def _initialize(self):
+        self.error: str = None
+        self.id: int = 0
+        self.instructions: list = self.circuit.as_openQASM()
+        self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
+        self._results: WMIExperimentResults  = None
+        
+        self.qobj_id: uuid.UUID = uuid.uuid4()
+        self.schema_version: str = const.QOBJ_SCHEMA_VERSION
+        
+        self._job_id: str = None
+        self._execution_datetime: str = None
         
     def _validate(self):
         # check that the number of shots is not exceeded
@@ -170,12 +181,12 @@ class WMIExperiment(Experiment):
                 if not gate_properties.check_params(gate_params):
                     raise ValueError(f"Gate {type(gate)} is not configured for the used parameters.")
 
-            # check that gates are performed only on coupled qubits
-            if len(gate_qubits) > 1 and self.configuration.coupling_map:
-                qubit_pairs = list(combinations(gate_qubits, 2))
-                for qubit_pair in qubit_pairs:
-                    if qubit_pair not in self.configuration.coupling_map:
-                        raise ValueError(f"Gate {type(gate)} is not performed on coupled qubits.")
+                # check that gates are performed only on coupled qubits
+                if len(gate_qubits) > 1 and self.configuration.coupling_map:
+                    qubit_pairs = list(combinations(gate_qubits, 2))
+                    for qubit_pair in qubit_pairs:
+                        if qubit_pair not in self.configuration.coupling_map:
+                            raise ValueError(f"Gate {type(gate)} is not performed on coupled qubits.")
             
         # check that the number of qubits is adequate
         qubits: set[Particle] = gate.particles()
@@ -218,5 +229,6 @@ class WMIExperimentResults(ExperimentResults):
         self._counts: dict = json['counts'][0]
         return self
     
-    def plot_histogram():
-        pass # TODO: matplotlib histogram plotting of counts
+    def plot_histogram(self):
+        # TODO: matplotlib histogram plotting of counts
+        print(self._counts)

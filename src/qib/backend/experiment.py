@@ -47,12 +47,11 @@ class Experiment(abc.ABC):
             type: ExperimentType,
     ):
         self.name: str = name
-        self.circuit = circuit
+        self.circuit: Circuit = circuit
         self.options: Options = options
         self.type: ExperimentType = type
         self.configuration: ProcessorConfiguration = configuration
-        self.credentials = credentials
-        self._initialize()
+        self.credentials: ProcessorCredentials = credentials
 
     @abc.abstractmethod
     def query_status(self) -> ExperimentStatus:
@@ -103,15 +102,11 @@ class Experiment(abc.ABC):
         Validate the experiment in the context of its quantum processor.
         """
 
+    @abc.abstractmethod
     def _initialize(self):
         """
         Initialize the experiment.
         """
-        self.error: str = None
-        self.id: int = 0
-        self.instructions: list = self.circuit.as_openQASM()
-        self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
-        self._results: ExperimentResults = None
 
 
 class ExperimentResults(abc.ABC):
