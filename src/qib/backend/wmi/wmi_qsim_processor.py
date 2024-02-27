@@ -19,15 +19,31 @@ class WMIQSimProcessor(QuantumProcessor):
         return ProcessorConfiguration(
             backend_name=const.BACK_WMIQSIM_NAME,
             backend_version=const.BACK_WMIQSIM_VERSION,
-            basis_gates=[const.GATE_ID, const.GATE_X, const.GATE_Y, const.GATE_SX, const.GATE_RZ],
+            basis_gates=[
+                const.GATE_ID,
+                const.GATE_X,
+                const.GATE_Y,
+                const.GATE_H,
+                const.GATE_SX,
+                const.GATE_RX,
+                const.GATE_RY,
+                const.GATE_RZ,
+                const.GATE_ISWAP,
+                const.GATE_CZ
+            ],
             conditional=False,
             coupling_map=None,
             gates=[
                 GateProperties(const.GATE_ID, [[0]]),
                 GateProperties(const.GATE_X, [[0]]),
                 GateProperties(const.GATE_Y, [[0]]),
+                GateProperties(const.GATE_H, [[0]]),
                 GateProperties(const.GATE_SX, [[0]]),
-                GateProperties(const.GATE_RZ, [[0]], ['theta'])
+                GateProperties(const.GATE_RX, [[0]], ['theta']),
+                GateProperties(const.GATE_RY, [[0]], ['theta']),
+                GateProperties(const.GATE_RZ, [[0]], ['theta']),
+                GateProperties(const.GATE_ISWAP, [[0, 1]]),
+                GateProperties(const.GATE_CZ, [[0, 1]]),
             ],
             local=False,
             max_shots=8196,
@@ -40,11 +56,11 @@ class WMIQSimProcessor(QuantumProcessor):
 
     def submit_experiment(self, name: str, circ: Circuit, options: WMIOptions = WMIOptions.default()) -> WMIExperiment:
         experiment = WMIExperiment(name, circ, options, self.configuration(), self.credentials)
-        response = self._send_experiment(experiment)
+        response = self._send_request(experiment)
         self._process_response(experiment, response.json())
         return experiment
 
-    def _send_experiment(self, experiment: WMIExperiment):
+    def _send_request(self, experiment: WMIExperiment):
         http_headers = {'access-token': self.access_token, 'Content-Type': 'application/json'}
         return networking.http_put(url = f'{self.url}/qobj', 
                             headers = http_headers,

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Union
 from itertools import combinations
+import time, sched, asyncio
 import uuid
 
 from qib.util import const, networking
@@ -27,7 +28,6 @@ class WMIExperiment(Experiment):
         self.qobj_id = uuid.uuid4()
         self.schema_version = const.QOBJ_SCHEMA_VERSION
         
-        self._mode: str = None # TODO: ignore it
         self._job_id: str = None
         self._execution_datetime: str = None
         self._validate()
@@ -36,10 +36,8 @@ class WMIExperiment(Experiment):
         # check current status
         if self.status == ExperimentStatus.INITIALIZING:
             raise ValueError("Experiment has to be submitted first.")
-        elif (self.status == ExperimentStatus.DONE or
-              self.status == ExperimentStatus.ERROR or
-              self.status == ExperimentStatus.CANCELLED):
-            raise ValueError("Experiment has already been executed.")
+        elif (self.status.is_terminal()):
+            return self.status
         
         # query incoming status
         http_headers = {'access-token': self.access_token, 'Content-Type': 'application/json'}
@@ -55,18 +53,31 @@ class WMIExperiment(Experiment):
 
         return self.status
 
-    def results(self) -> WMIExperimentResults:
-        if self._results is not None: return self._results
-        # TODO: self.query_status() with FRQ, 'till experiment finished, error, or cancelled
+    def results(self) -> Union[WMIExperimentResults, None]:
+        if self._results is not None and self.status is ExperimentStatus.DONE: return self._results
+        
+        scheduler = sched.scheduler(time.time, time.sleep)
+        def check_and_reschedule(scheduler):
+            if not self.query_status().is_terminal():
+                scheduler.enter(const.NW_QUERY_FRQ, 1, check_and_reschedule, (scheduler,))
+        scheduler.enter(0, 1, check_and_reschedule, (scheduler,))
+        scheduler.run()
+        
+        if self.status is ExperimentStatus.DONE: return self._results
+        return None
 
-    async def wait_for_results(self) -> WMIExperimentResults:
-        if self._results is not None: return self._results
-        # TODO: non-blocking wait for results
-        pass
+    async def wait_for_results(self) -> Union[WMIExperimentResults, None]:
+        if self._results is not None and self.status is ExperimentStatus.DONE: return self._results
+        
+        while not self.query_status().is_terminal():
+            await asyncio.sleep(const.NW_QUERY_FRQ)
+            
+        if self.status is ExperimentStatus.DONE: return self._results
+        return None
     
-    def cancel(self) -> WMIExperimentResults:
+    def cancel(self):
         # TODO: cancel running experiment
-        pass
+        raise NotImplementedError("Cancelling experiments is not yet supported for WMI backends.")
     
     def as_openQASM(self) -> dict:
         qubits: set[Particle] = self.circuit.particles()
@@ -198,6 +209,9 @@ class WMIExperimentResults(ExperimentResults):
     """
     The WMI quantum experiment results implementation.
     """
+
+    def runtime(self) -> float:
+        return self._runtime
         
     def from_json(self, json: dict) -> WMIExperimentResults:
         self._runtime: float = json['runtime']

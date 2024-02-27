@@ -21,12 +21,17 @@ def _http_request(request, url: str, headers: dict, body: dict, title: str) -> r
                 response.raise_for_status()
             except requests.exceptions.HTTPError as err:
                 raise RuntimeError(f"{log_title} HTTP error: {err}")
+            except requests.exceptions.RequestException as err:
+                raise RuntimeError(f"{log_title} Request error: {err}")
         except requests.exceptions.Timeout:
             retries += 1
-            print(f"{log_title} Timeout: {retries}/{const.NW_MAX_RETRIES} retries")
+            print(f"{log_title} Timeout error: {retries}/{const.NW_MAX_RETRIES} retries.")
             continue
         
         return response
+    
+    if retries > const.NW_MAX_RETRIES:
+        raise RuntimeError(f"{log_title} Timeout error: Maximum retries reached.")
 
 
 def http_put(url: str, headers: dict, body: dict, title: str = None) -> requests.Response:
