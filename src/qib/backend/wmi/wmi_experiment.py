@@ -37,15 +37,15 @@ class WMIExperiment(Experiment):
         
         # query incoming status
         http_headers = {'access-token': self.credentials.access_token, 'Content-Type': 'application/json'}
-        result = networking.http_post(url = f'{self.credentials.url}/qobj',
+        response = networking.http_post(url = f'{self.credentials.url}/qobj',
                                       headers = http_headers,
                                       body = {'job_id': self._job_id},
                                       title = const.NW_MSG_QUERY)
-        self.from_json(result.json())
+        self.from_json(response.json())
         
         # update results
         if self.status == ExperimentStatus.DONE:
-            self._results = WMIExperimentResults().from_json(result.json())
+            self._results = WMIExperimentResults(self).from_json(response.json())
 
         return self.status
 
@@ -139,7 +139,6 @@ class WMIExperiment(Experiment):
     def from_json(self, json: dict) -> WMIExperiment:
         self._job_id = json['job_id']
         self._execution_datetime = json['execution_datetime']
-        self._mode = json['mode']
         self._from_wmi_status(json['status'])
         return self
         
@@ -220,6 +219,8 @@ class WMIExperimentResults(ExperimentResults):
     """
     The WMI quantum experiment results implementation.
     """
+    def __init__(self, experiment: WMIExperiment):
+        self._experiment_ref: WMIExperiment = experiment
 
     def runtime(self) -> float:
         return self._runtime
