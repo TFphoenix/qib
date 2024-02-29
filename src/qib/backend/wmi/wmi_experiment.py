@@ -172,23 +172,23 @@ class WMIExperiment(Experiment):
             if gate_name != 'measure':
                 # check that the gate is supported by the processor
                 if gate_name not in self.configuration.basis_gates:
-                    raise ValueError(f"Gate {type(gate)} is not supported by the processor.")
+                    raise ValueError(f"Gate {gate_name.upper()} ({type(gate)}) is not supported by the processor.")
                 
                 # check that the used qubits are configured for the gate
                 gate_properties = self.configuration.get_gate_by_name(gate_name)
                 if gate_properties is None:
-                    raise ValueError(f"Gate {type(gate)} is not configured by the processor.")
+                    raise ValueError(f"Gate {gate_name.upper()} {type(gate)} is not configured by the processor.")
                 if not gate_properties.check_qubits(gate_qubits):
-                    raise ValueError(f"Gate {type(gate)} is not configured for the used qubits.")
+                    raise ValueError(f"Gate {gate_name.upper()} {type(gate)} is not configured for the used qubits.")
                 if not gate_properties.check_params(gate_params):
-                    raise ValueError(f"Gate {type(gate)} is not configured for the used parameters.")
+                    raise ValueError(f"Gate {gate_name.upper()} {type(gate)} is not configured for the used parameters.")
 
                 # check that gates are performed only on coupled qubits
                 if len(gate_qubits) > 1 and self.configuration.coupling_map:
                     qubit_pairs = list(combinations(gate_qubits, 2))
                     for qubit_pair in qubit_pairs:
-                        if qubit_pair not in self.configuration.coupling_map:
-                            raise ValueError(f"Gate {type(gate)} is not performed on coupled qubits.")
+                        if list(qubit_pair) not in self.configuration.coupling_map:
+                            raise ValueError(f"Gate {gate_name.upper()} {type(gate)} is not performed on coupled qubits.")
             
         # check that the number of qubits is adequate
         qubits: set[Particle] = gate.particles()
@@ -236,10 +236,12 @@ class WMIExperimentResults(ExperimentResults):
     
     def get_counts(self, binary: bool = False) -> dict:
         if binary:
-            return {str(bin(int(key, 16))).split('b')[1]: value for key, value in self._counts.items()}
+            n_qubits = len(self._experiment_ref.circuit.particles())
+            return {str(bin(int(key, 16))).split('b')[1].zfill(n_qubits): 
+                value for key, value in self._counts.items()}
         return self._counts
     
     def plot_histogram(self):
         # TODO: matplotlib histogram plotting of counts. 
         # Do we want to have matplotlib as a dependency? (Qiskit: matplotlib and latex)
-        print(self._counts)
+        raise NotImplementedError("Plotting histograms is not yet supported.")

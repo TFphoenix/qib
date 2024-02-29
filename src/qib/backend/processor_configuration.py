@@ -48,6 +48,13 @@ class ProcessorConfiguration:
             if gate.name == gate_name:
                 return gate
         return None
+    
+    @staticmethod
+    def coupling_map(n_qubits: int) -> Sequence[Sequence[int]]:
+        """
+        Generate a fully-coupled coupling map for a given number of qubits.
+        """
+        return [[q1, q2] for q1 in range(n_qubits) for q2 in range(n_qubits) if q1 != q2]
 
 
 class GateProperties:
