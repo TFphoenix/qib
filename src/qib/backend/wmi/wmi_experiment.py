@@ -28,6 +28,10 @@ class WMIExperiment(Experiment):
         self._initialize()
         self._validate()
     
+    @property
+    def job_id(self) -> str:
+        return self._job_id
+    
     def query_status(self) -> ExperimentStatus:
         # check current status
         if self.status == ExperimentStatus.INITIALIZING:
@@ -144,16 +148,15 @@ class WMIExperiment(Experiment):
         
     def _initialize(self):
         self.error: str = None
-        self.id: int = 0
         self.instructions: list = self.circuit.as_openQASM()
         self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
-        self._results: WMIExperimentResults  = None
         
         self.qobj_id: uuid.UUID = uuid.uuid4()
         self.schema_version: str = const.QOBJ_SCHEMA_VERSION
         
         self._job_id: str = None
         self._execution_datetime: str = None
+        self._results: WMIExperimentResults  = None
         
     def _validate(self):
         # check that the number of shots is not exceeded
@@ -222,6 +225,7 @@ class WMIExperimentResults(ExperimentResults):
     def __init__(self, experiment: WMIExperiment):
         self._experiment_ref: WMIExperiment = experiment
 
+    @property
     def runtime(self) -> float:
         return self._runtime
         
@@ -230,6 +234,12 @@ class WMIExperimentResults(ExperimentResults):
         self._counts: dict = json['counts'][0]
         return self
     
+    def get_counts(self, binary: bool = False) -> dict:
+        if binary:
+            return {str(bin(int(key, 16))).split('b')[1]: value for key, value in self._counts.items()}
+        return self._counts
+    
     def plot_histogram(self):
-        # TODO: matplotlib histogram plotting of counts
+        # TODO: matplotlib histogram plotting of counts. 
+        # Do we want to have matplotlib as a dependency? (Qiskit: matplotlib and latex)
         print(self._counts)

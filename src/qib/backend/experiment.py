@@ -132,6 +132,18 @@ class ExperimentResults(abc.ABC):
         """
 
     @abc.abstractmethod
+    def get_counts(self, binary: bool) -> dict:
+        """
+        Returns the measured counts of the experiment
+
+        Args:
+            binary (bool): If True, returns the counts states in binary string format
+
+        Returns:
+            dict: A dictionary of states and their respective counts
+        """
+
+    @abc.abstractmethod
     def plot_histogram(self):
         """
         Plots a matplotlib histogram of the experiment results (i.e. measured counts distribution)
