@@ -54,8 +54,12 @@ class WMIQSimProcessor(QuantumProcessor):
             simulator=True,
         )
 
-    def submit_experiment(self, name: str, circ: Circuit, options: WMIOptions = WMIOptions.default()) -> WMIExperiment:
+    def submit_experiment(self, name: str, circ: Circuit, options: WMIOptions = WMIOptions()) -> WMIExperiment:
+        # experiment
+        options.chip = const.BACK_WMIQSIM_NAME
         experiment = WMIExperiment(name, circ, options, self.configuration(), self.credentials)
+        
+        # request
         response = self._send_request(experiment)
         self._process_response(experiment, response.json())
         return experiment
