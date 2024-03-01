@@ -98,7 +98,7 @@ class WMIExperiment(Experiment):
                             'qreg_sizes': {'q': len(qubits)},
                             'clbit_labels': {'clbits': [['c', clbit] for clbit in clbits]},
                             'memory_slots': len(clbits),
-                            'creg_sizes': {'q': len(clbits)},
+                            'creg_sizes': {'c': len(clbits)},
                             'name': self.name,
                             'global_phase': 0.0,
                             'metadata': {}
