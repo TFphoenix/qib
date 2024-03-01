@@ -32,7 +32,7 @@ class WMIQSimProcessor(QuantumProcessor):
                 const.GATE_CZ
             ],
             conditional=False,
-            coupling_map=ProcessorConfiguration.coupling_map(3),
+            coupling_map=ProcessorConfiguration.generate_map(3),
             gates=[
                 GateProperties(const.GATE_ID, [[0], [1], [2]]),
                 GateProperties(const.GATE_X, [[0], [1], [2]]),
@@ -42,8 +42,8 @@ class WMIQSimProcessor(QuantumProcessor):
                 GateProperties(const.GATE_RX, [[0], [1], [2]], ['theta']),
                 GateProperties(const.GATE_RY, [[0], [1], [2]], ['theta']),
                 GateProperties(const.GATE_RZ, [[0], [1], [2]], ['theta']),
-                GateProperties(const.GATE_ISWAP, ProcessorConfiguration.coupling_map(3)),
-                GateProperties(const.GATE_CZ, ProcessorConfiguration.coupling_map(3))
+                GateProperties(const.GATE_ISWAP, ProcessorConfiguration.generate_map(3)),
+                GateProperties(const.GATE_CZ, ProcessorConfiguration.generate_map(3))
             ],
             local=False,
             max_shots=8196,
