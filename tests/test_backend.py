@@ -25,8 +25,9 @@ class TestBackend(unittest.TestCase):
         self.assertTrue(np.array_equal(
             circuit.as_matrix([field]).toarray(), h_cnot))
         processor = qib.backend.TensorNetworkProcessor()
-        processor.submit(circuit, [field], {
-            "filename": "bell_circuit_tensornet.hdf5"})
+        processor.submit(circuit, {
+            "filename": "bell_circuit_tensornet.hdf5"
+            })
 
     async def test_qiskit_sim(self):
         """
