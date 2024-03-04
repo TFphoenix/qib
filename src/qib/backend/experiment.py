@@ -67,7 +67,7 @@ class Experiment(abc.ABC):
         """
 
     @abc.abstractmethod
-    def as_openQASM(self) -> dict:
+    def as_qasm(self) -> dict:
         """
         Get the Qobj OpenQASM representation of the experiment.
         """

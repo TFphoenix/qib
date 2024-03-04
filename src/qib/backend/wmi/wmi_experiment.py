@@ -83,7 +83,7 @@ class WMIExperiment(Experiment):
         # TODO: cancel running experiment
         raise NotImplementedError("Cancelling experiments is not yet supported for WMI backends.")
     
-    def as_openQASM(self) -> dict:
+    def as_qasm(self) -> dict:
         qubits: set[Particle] = self.circuit.particles()
         clbits: set[int] = self.circuit.clbits()
         qobj = {
@@ -139,7 +139,7 @@ class WMIExperiment(Experiment):
         
     def _initialize(self):
         self.error: str = None
-        self.instructions: list = self.circuit.as_openQASM()
+        self.instructions: list = self.circuit.as_qasm()
         self.status: ExperimentStatus = ExperimentStatus.INITIALIZING
         
         self.qobj_id: uuid.UUID = uuid.uuid4()
@@ -155,7 +155,7 @@ class WMIExperiment(Experiment):
             raise ValueError("Number of shots exceeds maximum allowed number of shots.")
 
         for gate in self.circuit.gates:
-            gate_openQASM = gate.as_openQASM()
+            gate_openQASM = gate.as_qasm()
             gate_name = gate_openQASM['name']
             gate_qubits = gate_openQASM['qubits']
             gate_params = gate_openQASM['params'] if 'params' in gate_openQASM else []
