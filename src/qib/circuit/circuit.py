@@ -63,7 +63,7 @@ class Circuit:
         wires_set = set()
         for gate in self.gates:
             wires_set.update(gate.particles())
-        return wires_set
+        return sorted(wires_set, key=lambda p: p.index)
             
     def clbits(self):
         """
@@ -73,7 +73,7 @@ class Circuit:
         for gate in self.gates:
             if type(gate) is MeasureInstruction:
                 bits_set.update(gate.memory())
-        return bits_set
+        return sorted(bits_set)
 
     def inverse(self):
         """

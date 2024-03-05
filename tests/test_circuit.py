@@ -58,8 +58,8 @@ class TestCircuit(unittest.TestCase):
         circuit.append_gate(cnot)
         circuit.append_gate(measure)
         # particles & clbits
-        self.assertEqual(circuit.particles(), {q1, q2})
-        self.assertEqual(circuit.clbits(), {1, 2})
+        self.assertEqual(circuit.particles(), [q1, q2])
+        self.assertEqual(circuit.clbits(), [1, 2])
         # OpenQASM serialization
         self.assertEqual(len(circuit.as_qasm()), 3)
         self.assertEqual(circuit.as_qasm()[0]['name'], 'h')
