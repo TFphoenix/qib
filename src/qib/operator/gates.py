@@ -1137,7 +1137,7 @@ class RotationGate(Gate):
         # require a unique name for each rotation angle
         return TensorNetwork.wrap(self.as_matrix(), f"Rn({self.ntheta})")
 
-    def as_open_qasm(self):
+    def as_qasm(self):
         """
         Generate a Qobj OpenQASM representation of the gate.
         """

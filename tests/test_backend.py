@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import unittest
 import qib
@@ -26,7 +27,7 @@ class TestBackend(unittest.TestCase):
             circuit.as_matrix([field]).toarray(), h_cnot))
         processor = qib.backend.TensorNetworkProcessor()
         processor.submit(circuit, {
-            "filename": "bell_circuit_tensornet.hdf5"
+            "filename": f"{os.path.dirname(__file__)}/data/bell_circuit_tensornet.hdf5"
             })
 
     async def test_qiskit_sim(self):
